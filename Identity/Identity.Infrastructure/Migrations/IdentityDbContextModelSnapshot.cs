@@ -98,7 +98,7 @@ namespace Identity.Infrastructure.Migrations
                     b.Property<Guid>("ExternalId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("FullName")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 

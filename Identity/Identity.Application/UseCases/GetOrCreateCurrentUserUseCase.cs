@@ -1,14 +1,16 @@
+using FluentValidation;
 using Identity.Application.Commands;
 using Identity.Application.DTOs;
 using Identity.Application.Interfaces;
 using Identity.Application.Responses;
+using Identity.Application.Validators;
 using Microsoft.EntityFrameworkCore;
 
 namespace Identity.Application.UseCases;
 
-public class GetOrCreateCurrentUserUseCase(IIdentityDbContext dbContext)
+public class GetOrCreateCurrentUserUseCase(IIdentityDbContext dbContext, IValidator<GetOrCreateCurrentUserCommand> validator)
 {
-    public async Task<GetCurrentUserResponse> Handle(GetOrCreateCurrentUserCommand command)
+    public async Task<GetCurrentUserResponse> HandleAsync(GetOrCreateCurrentUserCommand command)
     {
         var currentUser = await FindUser(command.ExternalUserId);
         // TO DO: BUSCAR INFOS DO CONDOMINIO
@@ -22,7 +24,7 @@ public class GetOrCreateCurrentUserUseCase(IIdentityDbContext dbContext)
         return dbContext
             .Users
             .Where(u => u.ExternalId == externalUserId)
-            .Select(u => new GetCurrentUserResponse(u.Id, u.ExternalId, u.FullName, u.Email)
+            .Select(u => new GetCurrentUserResponse(u.Id, u.ExternalId, u.Name, u.Email)
             {
                 AvatarUrl =  u.AvatarUrl,
                 Condominiums = u.Condominiums
@@ -34,10 +36,12 @@ public class GetOrCreateCurrentUserUseCase(IIdentityDbContext dbContext)
 
     private async Task<GetCurrentUserResponse> CreateUser(GetOrCreateCurrentUserCommand command)
     {
+        await validator.ValidateAndThrowAsync(command);
+        
         var userEntity = command.ToUser();
         await dbContext.Users.AddAsync(userEntity);
         await dbContext.SaveChangesAsync();
         
-        return new GetCurrentUserResponse(userEntity.Id, userEntity.ExternalId, userEntity.FullName, userEntity.Email);
+        return new GetCurrentUserResponse(userEntity.Id, userEntity.ExternalId, userEntity.Name, userEntity.Email);
     }
 }

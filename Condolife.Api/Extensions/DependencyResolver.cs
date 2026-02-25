@@ -1,4 +1,6 @@
+using Identity.Application.Extensions;
 using Identity.Infrastructure.Extensions;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Condolife.Api.Extensions;
@@ -10,6 +12,7 @@ public static class DependencyResolver
         public void AddIdentityModule(IConfiguration configuration)
         {
             services.AddIdentityInfra(configuration);
+            services.AddIdentityApplication();
         }
 
         public void AddApi(IConfiguration configuration)
@@ -18,21 +21,28 @@ public static class DependencyResolver
             services.AddControllers();
             services.AddEndpointsApiExplorer();
             
+            var webOrigin = configuration["Cors:WebOrigin"] ?? throw new KeyNotFoundException("ENV: 'Cors:WebOrigin' não foi encontrada.");
+            services.AddCors(x =>
+            {
+                x.AddPolicy("CondolifeWeb CORS Policy", builder =>
+                {
+                    builder.WithOrigins(webOrigin).AllowAnyHeader().AllowAnyMethod().AllowCredentials();
+                });
+            });
+            
             var currentEnvironment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 
+            var jwtAuthority = configuration["Jwt:Authority"] ?? throw new KeyNotFoundException("ENV: 'Jwt:Authority' não foi encontrada.");
+            var jwtAudience = configuration["Jwt:Audience"] ?? throw new KeyNotFoundException("ENV: 'Jwt:Audience' não foi encontrada.");
             services
-                .AddAuthentication("Bearer")
+                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
                     options.RequireHttpsMetadata = currentEnvironment != "Development";
-                    options.Authority = configuration["Jwt:Authority"];
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidIssuer = configuration["Jwt:Issuer"],
-                        ValidateIssuer = true,
-                        ValidAudience = configuration["Jwt:Audience"],
-                        ValidateAudience = true
-                    };
+                    options.Authority = jwtAuthority;
+                    options.Audience = jwtAudience;
+                    
+                    options.MapInboundClaims = false;
                 });
         }
     }
