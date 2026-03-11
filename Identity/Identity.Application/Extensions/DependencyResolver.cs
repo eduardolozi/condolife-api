@@ -1,6 +1,8 @@
 using FluentValidation;
 using Identity.Application.Commands;
-using Identity.Application.UseCases;
+using Identity.Application.Interfaces.Services;
+using Identity.Application.Services;
+using Identity.Application.UseCases.Users;
 using Identity.Application.Validators;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -10,7 +12,10 @@ public static class DependencyResolver
 {
     public static void AddIdentityApplication(this IServiceCollection services)
     {
-        services.AddScoped<IValidator<GetOrCreateCurrentUserCommand>, GetOrCreateCurrentUserCommandValidator>();
+        services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IInviteService, InviteService>();
+        
+        services.AddScoped<IValidator<GetOrCreateCurrentUserCommand>, CreateCurrentUserCommandValidator>();
         services.AddScoped<GetOrCreateCurrentUserUseCase>();
     }
 }

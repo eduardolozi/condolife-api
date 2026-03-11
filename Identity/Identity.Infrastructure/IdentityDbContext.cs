@@ -1,4 +1,4 @@
-using Identity.Application.Interfaces;
+using Identity.Application.Interfaces.InfraAbstractions;
 using Identity.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,5 +15,13 @@ public class IdentityDbContext(DbContextOptions<IdentityDbContext> options) : Db
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasDefaultSchema(SchemaName);
+
+        modelBuilder.Entity<User>(x =>
+        {
+            x.HasIndex(u => u.ExternalId, "Index_Users_ExternalId").IsUnique();
+            x.HasIndex(u => u.Email, "Index_Users_Email").IsUnique();
+        });
+        
+        base.OnModelCreating(modelBuilder);
     }
 }

@@ -5,7 +5,11 @@ namespace Identity.Domain.Enums;
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum UserRole
 {
-    Admin,
+    PropertyManager,
+    Syndic,
+    SubSyndic,
+    FiscalCouncil,
     Doorman,
-    Resident
+    Resident,
+    Dependent
 }

@@ -13,9 +13,11 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("CondolifeWeb CORS Policy");
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
-app.UseCors();
 
 app.Run();

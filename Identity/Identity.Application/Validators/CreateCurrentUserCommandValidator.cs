@@ -3,9 +3,9 @@ using Identity.Application.Commands;
 
 namespace Identity.Application.Validators;
 
-public class GetOrCreateCurrentUserCommandValidator : AbstractValidator<GetOrCreateCurrentUserCommand>
+public class CreateCurrentUserCommandValidator : AbstractValidator<GetOrCreateCurrentUserCommand>
 {
-    public GetOrCreateCurrentUserCommandValidator()
+    public CreateCurrentUserCommandValidator()
     {
         RuleLevelCascadeMode = CascadeMode.Continue;
 

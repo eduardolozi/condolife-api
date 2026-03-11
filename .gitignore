@@ -98,3 +98,5 @@ coverage/
 *.swp
 *.tmp
 *.cache
+
+codex/

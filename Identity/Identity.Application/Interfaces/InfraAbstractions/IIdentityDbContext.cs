@@ -1,7 +1,7 @@
 using Identity.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Identity.Application.Interfaces;
+namespace Identity.Application.Interfaces.InfraAbstractions;
 
 public interface IIdentityDbContext
 {

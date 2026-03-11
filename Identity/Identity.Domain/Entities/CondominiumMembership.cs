@@ -8,6 +8,7 @@ public class CondominiumMembership
     
     public UserRole Role { get; set; }
     public DateTime JoinDate { get; set; }
+    public UserRole UserRole { get; set; }
     
     public int CondominiumId { get; set; }
     public int UserId { get; set; }
