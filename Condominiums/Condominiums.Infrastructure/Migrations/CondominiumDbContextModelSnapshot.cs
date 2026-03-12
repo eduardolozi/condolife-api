@@ -31,6 +31,10 @@ namespace Condominiums.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("IbgeCode")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
@@ -41,6 +45,9 @@ namespace Condominiums.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("StateId");
+
+                    b.HasIndex(new[] { "IbgeCode" }, "Index_Cities_IbgeCode")
+                        .IsUnique();
 
                     b.ToTable("Cities", "condominium");
                 });
@@ -106,6 +113,9 @@ namespace Condominiums.Infrastructure.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
 
                     b.ToTable("States", "condominium");
                 });

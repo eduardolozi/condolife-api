@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Condominiums.Infrastructure.Extensions;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
@@ -81,6 +82,7 @@ namespace Condominiums.Infrastructure.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: false),
+                    IbgeCode = table.Column<string>(type: "text", nullable: false),
                     StateId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
@@ -96,16 +98,33 @@ namespace Condominiums.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "Index_Cities_IbgeCode",
+                schema: "condominium",
+                table: "Cities",
+                column: "IbgeCode",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Cities_StateId",
                 schema: "condominium",
                 table: "Cities",
                 column: "StateId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_States_Code",
+                schema: "condominium",
+                table: "States",
+                column: "Code",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Towers_CondominiumId",
                 schema: "condominium",
                 table: "Towers",
                 column: "CondominiumId");
+            
+            migrationBuilder.Sql(Utils.ReadSqlSeed("states.sql"));
+            migrationBuilder.Sql(Utils.ReadSqlSeed("cities.sql"));
         }
 
         /// <inheritdoc />

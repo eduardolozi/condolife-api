@@ -16,6 +16,18 @@ public class CondominiumDbContext(DbContextOptions<CondominiumDbContext> options
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasDefaultSchema(SchemaName);
+
+        modelBuilder.Entity<State>(x =>
+        {
+            x.HasIndex(s => s.Code).IsUnique();
+        });
+        
+        modelBuilder.Entity<City>(x =>
+        {
+            x.HasIndex(c => c.IbgeCode, "Index_Cities_IbgeCode")
+                .IsUnique();
+        });
+        
         base.OnModelCreating(modelBuilder);
     }
 }

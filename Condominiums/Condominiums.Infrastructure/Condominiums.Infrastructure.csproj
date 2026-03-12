@@ -19,4 +19,8 @@
       <ProjectReference Include="..\Condominiums.Domain\Condominiums.Domain.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+        <EmbeddedResource Include="Seeds\*.sql" />
+    </ItemGroup>
+
 </Project>
