@@ -1,3 +1,5 @@
+using Condominiums.Application.Extensions;
+using Condominiums.Infrastructure.Extensions;
 using Identity.Application.Extensions;
 using Identity.Infrastructure.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -13,6 +15,12 @@ public static class DependencyResolver
         {
             services.AddIdentityInfra(configuration);
             services.AddIdentityApplication();
+        }
+
+        public void AddCondominiumsModule(IConfiguration configuration)
+        {
+            services.AddCondominiumsInfra(configuration);
+            services.AddCondominiumsApplication();
         }
 
         public void AddApi(IConfiguration configuration)

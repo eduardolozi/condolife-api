@@ -17,6 +17,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Condominiums\Condominiums.Infrastructure\Condominiums.Infrastructure.csproj" />
       <ProjectReference Include="..\Identity\Identity.Infrastructure\Identity.Infrastructure.csproj" />
       <ProjectReference Include="..\Notifications\Notifications.Infrastructure\Notifications.Infrastructure.csproj" />
     </ItemGroup>

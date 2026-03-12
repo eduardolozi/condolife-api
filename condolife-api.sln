@@ -4,8 +4,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Condolife.Api", "Condolife.
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Identity", "Identity", "{83BCA6CE-F208-47D9-9A79-723F6A8772B4}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Management", "Management", "{3D382DEE-E593-4E24-B4C3-A74D98EB536D}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{043509AA-E3F1-442A-A816-A7E730B246F8}"
 	ProjectSection(SolutionItems) = preProject
 		compose.yaml = compose.yaml
@@ -22,6 +20,14 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Notifications.Application", "Notifications\Notifications.Application\Notifications.Application.csproj", "{01EB8F2A-8FAD-4F67-BE61-661CB9BFEC5C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Notifications.Infrastructure", "Notifications\Notifications.Infrastructure\Notifications.Infrastructure.csproj", "{3A95DEDE-8E9A-421B-821C-BF4213041E49}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Condominiums", "Condominiums", "{693000BA-CC3E-4BDD-BD1C-B20ACECEE9CC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Condominiums.Application", "Condominiums\Condominiums.Application\Condominiums.Application.csproj", "{9D9DC185-5A38-4B62-8C50-8FE11CA7335B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Condominiums.Infrastructure", "Condominiums\Condominiums.Infrastructure\Condominiums.Infrastructure.csproj", "{38EAD099-4D39-464E-8659-48DA13055F94}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Condominiums.Domain", "Condominiums\Condominiums.Domain\Condominiums.Domain.csproj", "{D72C05D5-FDD4-4F73-90E6-3127680BE152}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -53,6 +59,18 @@ Global
 		{3A95DEDE-8E9A-421B-821C-BF4213041E49}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3A95DEDE-8E9A-421B-821C-BF4213041E49}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3A95DEDE-8E9A-421B-821C-BF4213041E49}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9D9DC185-5A38-4B62-8C50-8FE11CA7335B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D9DC185-5A38-4B62-8C50-8FE11CA7335B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D9DC185-5A38-4B62-8C50-8FE11CA7335B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D9DC185-5A38-4B62-8C50-8FE11CA7335B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{38EAD099-4D39-464E-8659-48DA13055F94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{38EAD099-4D39-464E-8659-48DA13055F94}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{38EAD099-4D39-464E-8659-48DA13055F94}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38EAD099-4D39-464E-8659-48DA13055F94}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D72C05D5-FDD4-4F73-90E6-3127680BE152}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D72C05D5-FDD4-4F73-90E6-3127680BE152}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D72C05D5-FDD4-4F73-90E6-3127680BE152}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D72C05D5-FDD4-4F73-90E6-3127680BE152}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{1587BB4A-489C-4E2E-A01E-641F3CFB58E1} = {83BCA6CE-F208-47D9-9A79-723F6A8772B4}
@@ -60,5 +78,8 @@ Global
 		{8D9D0261-6AE1-4056-AD63-81AF997839EE} = {83BCA6CE-F208-47D9-9A79-723F6A8772B4}
 		{01EB8F2A-8FAD-4F67-BE61-661CB9BFEC5C} = {D605B917-41C7-4E6A-9FFC-063466C47D8B}
 		{3A95DEDE-8E9A-421B-821C-BF4213041E49} = {D605B917-41C7-4E6A-9FFC-063466C47D8B}
+		{9D9DC185-5A38-4B62-8C50-8FE11CA7335B} = {693000BA-CC3E-4BDD-BD1C-B20ACECEE9CC}
+		{38EAD099-4D39-464E-8659-48DA13055F94} = {693000BA-CC3E-4BDD-BD1C-B20ACECEE9CC}
+		{D72C05D5-FDD4-4F73-90E6-3127680BE152} = {693000BA-CC3E-4BDD-BD1C-B20ACECEE9CC}
 	EndGlobalSection
 EndGlobal
