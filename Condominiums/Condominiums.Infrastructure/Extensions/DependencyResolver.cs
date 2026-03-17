@@ -1,4 +1,4 @@
-using Condominiums.Application.Interfaces.InfraAbstractions;
+using Condominiums.Application.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

@@ -1,6 +1,6 @@
-using Condominiums.Application.DTOs;
+using Condominiums.Application.Addresses.DTOs;
 
-namespace Condominiums.Application.Interfaces.Services;
+namespace Condominiums.Application.Addresses;
 
 public interface IAddressService
 {

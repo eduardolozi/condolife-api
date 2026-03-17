@@ -1,4 +1,4 @@
-namespace Condominiums.Application.DTOs;
+namespace Condominiums.Application.Addresses.DTOs;
 
 public record AddressDto(
     int CondominiumId,

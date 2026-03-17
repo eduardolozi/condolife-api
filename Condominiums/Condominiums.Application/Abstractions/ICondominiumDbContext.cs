@@ -1,7 +1,7 @@
 using Condominiums.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Condominiums.Application.Interfaces.InfraAbstractions;
+namespace Condominiums.Application.Abstractions;
 
 public interface ICondominiumDbContext
 {

@@ -1,4 +1,4 @@
-using Condominiums.Application.Extensions;
+using Condominiums.Application;
 using Condominiums.Infrastructure.Extensions;
 using Identity.Application.Extensions;
 using Identity.Infrastructure.Extensions;

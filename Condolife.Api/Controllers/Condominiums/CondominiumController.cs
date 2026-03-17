@@ -1,6 +1,5 @@
 using Condolife.Api.Extensions;
-using Condominiums.Application.Commands;
-using Condominiums.Application.UseCases.Condominiums;
+using Condominiums.Application.Condominiums.CreateCondominium;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

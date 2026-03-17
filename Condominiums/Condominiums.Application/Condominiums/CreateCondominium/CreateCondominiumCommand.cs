@@ -1,6 +1,6 @@
 using Condominiums.Domain.Entities;
 
-namespace Condominiums.Application.Commands;
+namespace Condominiums.Application.Condominiums.CreateCondominium;
 
 public class CreateCondominiumCommand
 {

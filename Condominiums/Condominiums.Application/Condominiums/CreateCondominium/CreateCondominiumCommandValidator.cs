@@ -1,16 +1,11 @@
-using Condominiums.Application.Commands;
-using Condominiums.Application.Interfaces.InfraAbstractions;
 using FluentValidation;
 
-namespace Condominiums.Application.Validators;
+namespace Condominiums.Application.Condominiums.CreateCondominium;
 
 public class CreateCondominiumCommandValidator : AbstractValidator<CreateCondominiumCommand>
 {
-    private readonly ICondominiumDbContext _dbContext;
-    public CreateCondominiumCommandValidator(ICondominiumDbContext dbContext)
+    public CreateCondominiumCommandValidator()
     {
-        _dbContext = dbContext;
-        
         RuleLevelCascadeMode = CascadeMode.Stop;
 
         RuleFor(x => x.CondominiumName)

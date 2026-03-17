@@ -1,9 +1,8 @@
-using Condominiums.Application.DTOs;
-using Condominiums.Application.Interfaces.InfraAbstractions;
-using Condominiums.Application.Interfaces.Services;
+using Condominiums.Application.Abstractions;
+using Condominiums.Application.Addresses.DTOs;
 using Microsoft.EntityFrameworkCore;
 
-namespace Condominiums.Application.Services;
+namespace Condominiums.Application.Addresses;
 
 public class AddressService(ICondominiumDbContext dbContext) : IAddressService
 {
