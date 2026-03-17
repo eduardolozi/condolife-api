@@ -7,7 +7,7 @@ public class CreateCurrentUserCommandValidator : AbstractValidator<GetOrCreateCu
 {
     public CreateCurrentUserCommandValidator()
     {
-        RuleLevelCascadeMode = CascadeMode.Continue;
+        RuleLevelCascadeMode = CascadeMode.Stop;
 
         RuleFor(x => x.ExternalUserId)
             .NotEmpty().WithMessage("O externalId do usuário deve ser informado");

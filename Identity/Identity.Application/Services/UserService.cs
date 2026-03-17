@@ -19,7 +19,7 @@ public class UserService(IIdentityDbContext dbContext) : IUserService
             {
                 AvatarUrl =  u.AvatarUrl,
                 Condominiums = u.Condominiums
-                    .Select(c => new CondominiumMembershipDto(c.CondominiumId, c.Role))
+                    .Select(c => new CondominiumMembershipDto(c.CondominiumId, c.UserRole))
                     .ToList()
             })
             .SingleOrDefaultAsync(cancellationToken: ct);

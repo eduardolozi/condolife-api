@@ -6,7 +6,6 @@ public class CondominiumMembership
 {
     public int Id { get; set; }
     
-    public UserRole Role { get; set; }
     public DateTime JoinDate { get; set; }
     public UserRole UserRole { get; set; }
     
