@@ -1,4 +1,5 @@
-using Identity.Application.Interfaces.InfraAbstractions;
+using Identity.Application;
+using Identity.Application.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

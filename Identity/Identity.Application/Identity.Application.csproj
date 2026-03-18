@@ -7,6 +7,8 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\Condominiums\Condominiums.Contracts\Condominiums.Contracts.csproj" />
+      <ProjectReference Include="..\Identity.Contracts\Identity.Contracts.csproj" />
       <ProjectReference Include="..\Identity.Domain\Identity.Domain.csproj" />
     </ItemGroup>
 
@@ -16,8 +18,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Queries\" />
-      <Folder Include="UseCases\Invites\" />
+      <Folder Include="Common\" />
     </ItemGroup>
 
 </Project>

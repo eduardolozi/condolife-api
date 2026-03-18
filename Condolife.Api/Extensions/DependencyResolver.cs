@@ -1,6 +1,6 @@
 using Condominiums.Application;
 using Condominiums.Infrastructure.Extensions;
-using Identity.Application.Extensions;
+using Identity.Application;
 using Identity.Infrastructure.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;

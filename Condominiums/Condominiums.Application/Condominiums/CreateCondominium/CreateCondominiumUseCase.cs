@@ -1,20 +1,21 @@
 using Condominiums.Application.Abstractions;
-using Condominiums.Application.Addresses;
+using Condominiums.Application.Addresses.DTOs;
 using FluentValidation;
-using Identity.Application.Interfaces.Services;
+using Identity.Contracts.CondominiumMemberships.CreateCondominiumMembership;
+using Microsoft.EntityFrameworkCore;
 
 namespace Condominiums.Application.Condominiums.CreateCondominium;
 
 public class CreateCondominiumUseCase(
     IValidator<CreateCondominiumCommand> validator, 
-    IAddressService addressService,
-    ICondominiumMembershipService condominiumMembershipService,
-    ICondominiumDbContext dbContext)
+    ICondominiumDbContext dbContext,
+    ICreateCondominiumMembershipHandler createCondominiumMembershipHandler)
 {
     public async Task HandleAsync(CreateCondominiumCommand command, Guid externalUserId, CancellationToken ct)
     {
         await validator.ValidateAndThrowAsync(command, ct);
-        var cityStateInfo = await addressService.GetCityIdAndStateCodeByIbgeCode(command.IbgeCode, ct)
+        
+        var cityStateInfo = await GetCityIdAndStateCodeByIbgeCode(command.IbgeCode, ct)
             ?? throw new Exception($"Não foi possível encontrar a cidade pelo código IBGE ({command.IbgeCode}).");
 
         var stateExists = cityStateInfo.StateCode.Equals(command.StateCode, StringComparison.InvariantCultureIgnoreCase);
@@ -24,6 +25,15 @@ public class CreateCondominiumUseCase(
         await dbContext.Condominiums.AddAsync(condominium, ct);
         await dbContext.SaveChangesAsync(ct);
 
-        await condominiumMembershipService.CreateSyndicMembership(condominium.Id, externalUserId, ct);
+        await createCondominiumMembershipHandler.HandleAsync(condominium.Id, externalUserId, ct);
+    }
+
+    private Task<CityStateInfoDto?> GetCityIdAndStateCodeByIbgeCode(string ibgeCode, CancellationToken ct)
+    {
+        return dbContext
+            .Cities
+            .Where(c => c.IbgeCode == ibgeCode)
+            .Select(c => new CityStateInfoDto(c.Id, c.State!.Code))
+            .FirstOrDefaultAsync(ct);
     }
 }

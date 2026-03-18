@@ -1,7 +1,5 @@
 using Condolife.Api.Extensions;
-using Identity.Application.Commands;
-using Identity.Application.Responses;
-using Identity.Application.UseCases.Users;
+using Identity.Application.Users.GetOrCreateCurrentUser;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,7 +11,7 @@ namespace Condolife.Api.Controllers.Identity;
 public class UserController : ControllerBase
 {
     [HttpPost("me")]
-    public async Task<ActionResult<GetCurrentUserResponse>> GetOrCreateCurrentUser(
+    public async Task<ActionResult<GetCurrentUserResult>> GetOrCreateCurrentUser(
         [FromServices] GetOrCreateCurrentUserUseCase useCase, CancellationToken ct)
     {
         try
