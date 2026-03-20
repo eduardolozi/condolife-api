@@ -16,10 +16,10 @@ public class CreateCondominiumUseCase(
         await validator.ValidateAndThrowAsync(command, ct);
         
         var cityStateInfo = await GetCityIdAndStateCodeByIbgeCode(command.IbgeCode, ct)
-            ?? throw new Exception($"Não foi possível encontrar a cidade pelo código IBGE ({command.IbgeCode}).");
+            ?? throw new ApplicationException($"Não foi possível encontrar a cidade pelo código IBGE ({command.IbgeCode}).");
 
         var stateExists = cityStateInfo.StateCode.Equals(command.StateCode, StringComparison.InvariantCultureIgnoreCase);
-        if (!stateExists) throw new Exception("A UF informada não é válida para a cidade.");
+        if (!stateExists) throw new ApplicationException("A UF informada não é válida para a cidade.");
 
         var condominium = command.ToCondominium(cityStateInfo.CityId);
         await dbContext.Condominiums.AddAsync(condominium, ct);

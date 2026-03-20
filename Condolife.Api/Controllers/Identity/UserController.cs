@@ -14,20 +14,15 @@ public class UserController : ControllerBase
     public async Task<ActionResult<GetCurrentUserResult>> GetOrCreateCurrentUser(
         [FromServices] GetOrCreateCurrentUserUseCase useCase, CancellationToken ct)
     {
-        try
+        var currentUser = new GetOrCreateCurrentUserCommand
         {
-            var currentUser = new GetOrCreateCurrentUserCommand
-            {
-                ExternalUserId = User.GetExternalUserId(),
-                Email = User.GetEmail(),
-                Name = User.GetFullName()
-            };
-            var user = await useCase.HandleAsync(currentUser, ct);
-            return Ok(user);
-        }
-        catch (Exception e)
-        {
-            return BadRequest(e.Message);
-        }
+            ExternalUserId = User.GetExternalUserId(),
+            Email = User.GetEmail(),
+            Name = User.GetFullName()
+        };
+        
+        var user = await useCase.HandleAsync(currentUser, ct);
+        
+        return Ok(user);
     }
 }
