@@ -16,7 +16,11 @@ public class DefaultExceptionHandler : IExceptionHandler
             _ => StatusCodes.Status500InternalServerError
         };
 
-        var payload = new ResponseError(exception.Message);
+        var message = httpContext.Response.StatusCode == StatusCodes.Status500InternalServerError 
+            ? "Erro inesperado"
+            : exception.Message;
+            
+        var payload = new ResponseError(message);
 
         await httpContext.Response.WriteAsJsonAsync(payload, cancellationToken);
         
