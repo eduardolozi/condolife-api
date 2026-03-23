@@ -1,3 +1,4 @@
+using Condolife.Api.Middlewares.ExceptionHandlers;
 using Condominiums.Application;
 using Condominiums.Infrastructure.Extensions;
 using Identity.Application;
@@ -26,7 +27,13 @@ public static class DependencyResolver
         public void AddApi(IConfiguration configuration)
         {
             services.AddOpenApi();
-            services.AddControllers();
+            
+            services.AddControllers()
+            .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
+            });
+            
             services.AddEndpointsApiExplorer();
             
             var webOrigin = configuration["Cors:WebOrigin"] ?? throw new KeyNotFoundException("ENV: 'Cors:WebOrigin' não foi encontrada.");
@@ -52,6 +59,10 @@ public static class DependencyResolver
                     
                     options.MapInboundClaims = false;
                 });
+
+            services.AddExceptionHandler<ValidationExceptionHandler>();
+            services.AddExceptionHandler<DefaultExceptionHandler>();
+            services.AddProblemDetails();
         }
     }
 }

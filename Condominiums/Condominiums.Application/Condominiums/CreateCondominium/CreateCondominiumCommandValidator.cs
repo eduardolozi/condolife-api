@@ -41,5 +41,8 @@ public class CreateCondominiumCommandValidator : AbstractValidator<CreateCondomi
             .NotEmpty().WithMessage("O CEP deve ser informado.")
             .Length(8).WithMessage("O CEP deve possuir 8 dígitos.")
             .Matches(@"^\d+$").WithMessage("O CEP deve possuir apenas dígitos.");
+
+        RuleFor(x => x.Complement)
+            .MaximumLength(150).WithMessage("O complemento deve possuir até 150 caracteres.");
     }
 }

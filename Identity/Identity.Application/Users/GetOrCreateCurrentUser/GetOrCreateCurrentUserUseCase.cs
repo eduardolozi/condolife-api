@@ -1,7 +1,9 @@
 using FluentValidation;
 using Identity.Application.Abstractions;
 using Identity.Application.CondominiumMemberships.GetCondominiumMemberships;
+using Identity.Application.Extensions;
 using Identity.Domain.Entities;
+using Identity.Domain.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 
@@ -43,14 +45,9 @@ public class GetOrCreateCurrentUserUseCase(
         {
             await dbContext.SaveChangesAsync(cancellationToken: ct);
         }
-        catch (DbUpdateException ex) when (ex.InnerException is PostgresException { SqlState: "23505" } pgEx)
+        catch (DbUpdateException ex) when (DbExceptionMapper.TryMap(ex, out var mappedException))
         {
-            throw pgEx.ConstraintName switch
-            {
-                "UX_users_email" => new Exception("Email já cadastrado."),
-                "UX_users_external_id" => new Exception("Usuário já existe (ExternalId duplicado)."),
-                _ => new Exception("Violação de unicidade.")
-            };
+            throw mappedException;
         }
     }
 }
