@@ -7,6 +7,6 @@ public class Condominium
     public int Id { get; set; }
     public required string Name { get; set; }
     public required Address Address { get; set; }
-    
-    public List<Tower> Towers { get; set; }
+
+    public List<Tower> Towers { get; set; } = [];
 }

@@ -1,5 +1,6 @@
 using Condolife.Api.Extensions;
 using Condominiums.Application.Condominiums.CreateCondominium;
+using Condominiums.Application.Condominiums.GetCondominium;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,5 +20,15 @@ public class CondominiumController : ControllerBase
         var externalUserId = User.GetExternalUserId();
         await useCase.HandleAsync(command, externalUserId, ct);
         return Created();
+    }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> Get(
+        [FromServices] GetCondominiumUseCase useCase, 
+        [FromRoute] int id, 
+        CancellationToken ct)
+    {
+        var condominium = await useCase.HandleAsync(id, ct);
+        return condominium is null ? NotFound() : Ok(condominium);
     }
 }

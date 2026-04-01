@@ -26,7 +26,7 @@ public static class DependencyResolver
 
         public void AddApi(IConfiguration configuration)
         {
-            services.AddOpenApi();
+            //services.AddOpenApi();
             
             services.AddControllers()
             .AddJsonOptions(options =>
