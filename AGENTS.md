@@ -70,6 +70,13 @@ Instead:
 - `dotnet ef migrations add -p {Module}.Infrastructure -s Condolife.Api -c {Module}DbContext`
 - `dotnet ef database update -p {Module}.Infrastructure -s Condolife.Api -c {Module}DbContext`
 
+## Skills Convention
+- Skill documents are versioned in `docs/skills/`.
+- Naming convention: one file per skill, lowercase kebab-case (example: `dotnet-clean-arch.md`).
+- Module `AGENTS.md` files may reference only skills that exist under `docs/skills/`.
+- Skills provide technical guidance; module `AGENTS.md` files provide bounded-context guidance.
+- Index and usage guidance for all skills lives in `docs/skills/README.md`.
+
 ## Git & Configuration Rules
 - Do not perform git workflow actions such as commits, rebases, branch creation, or pull requests unless explicitly requested.
 - Do not commit real connection strings, JWT settings, or email credentials.
