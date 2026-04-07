@@ -4,7 +4,7 @@ using Condominiums.Infrastructure.Extensions;
 using Identity.Application;
 using Identity.Infrastructure.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi;
 
 namespace Condolife.Api.Extensions;
 
@@ -26,16 +26,14 @@ public static class DependencyResolver
 
         public void AddApi(IConfiguration configuration)
         {
-            //services.AddOpenApi();
-            
             services.AddControllers()
             .AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
             });
-            
+
             services.AddEndpointsApiExplorer();
-            
+
             var webOrigin = configuration["Cors:WebOrigin"] ?? throw new KeyNotFoundException("ENV: 'Cors:WebOrigin' não foi encontrada.");
             services.AddCors(x =>
             {
@@ -44,7 +42,7 @@ public static class DependencyResolver
                     builder.WithOrigins(webOrigin).AllowAnyHeader().AllowAnyMethod().AllowCredentials();
                 });
             });
-            
+
             var currentEnvironment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 
             var jwtAuthority = configuration["Jwt:Authority"] ?? throw new KeyNotFoundException("ENV: 'Jwt:Authority' não foi encontrada.");
@@ -56,7 +54,7 @@ public static class DependencyResolver
                     options.RequireHttpsMetadata = currentEnvironment != "Development";
                     options.Authority = jwtAuthority;
                     options.Audience = jwtAudience;
-                    
+
                     options.MapInboundClaims = false;
                 });
 

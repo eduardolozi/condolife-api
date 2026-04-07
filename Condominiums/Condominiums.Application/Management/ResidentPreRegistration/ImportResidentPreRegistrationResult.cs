@@ -1,0 +1,3 @@
+namespace Condominiums.Application.Management.ResidentPreRegistration;
+
+public record ImportResidentPreRegistrationResult(int ImportedCount);

@@ -10,11 +10,6 @@ var app = builder.Build();
 
 app.UseExceptionHandler();
 
-if (app.Environment.IsDevelopment())
-{
-    //app.MapOpenApi();
-}
-
 app.UseHttpsRedirection();
 
 app.UseCors("CondolifeWeb CORS Policy");

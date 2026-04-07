@@ -1,3 +1,5 @@
 namespace Condolife.Api.ViewModels;
 
-public record ResponseError(string Message, List<string>? Errors = null);
+public record ResponseError(
+    string Message,
+    List<ResponseValidationError>? ValidationErrors = null);

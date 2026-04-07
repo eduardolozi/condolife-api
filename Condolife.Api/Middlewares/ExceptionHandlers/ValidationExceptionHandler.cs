@@ -12,14 +12,17 @@ public class ValidationExceptionHandler : IExceptionHandler
 
         httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
 
-        var errors = validationException.Errors
-            .Select(x => x.ErrorMessage)
+        var validationErrors = validationException.Errors
+            .Select(x => new ResponseValidationError(
+                string.IsNullOrWhiteSpace(x.PropertyName) ? null : x.PropertyName,
+                x.ErrorMessage,
+                x.CustomState as int?))
             .ToList();
 
-        var payload = new ResponseError("Um ou mais erros de validação ocorreram", errors);
-        
+        var payload = new ResponseError("Um ou mais erros de validação ocorreram", validationErrors);
+
         await httpContext.Response.WriteAsJsonAsync(payload, cancellationToken);
-        
+
         return true;
     }
 }

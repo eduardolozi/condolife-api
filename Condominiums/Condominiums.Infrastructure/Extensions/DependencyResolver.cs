@@ -1,4 +1,5 @@
 using Condominiums.Application.Abstractions;
+using Condominiums.Infrastructure.Files;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,5 +17,6 @@ public static class DependencyResolver
             options.UseNpgsql(pgConnectionString);
         });
         services.AddScoped<ICondominiumDbContext>(sp => sp.GetRequiredService<CondominiumDbContext>());
+        services.AddScoped<ICsvFileService, CsvFileService>();
     }
 }

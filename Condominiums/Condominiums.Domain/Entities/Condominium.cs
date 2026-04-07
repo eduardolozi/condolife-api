@@ -9,4 +9,5 @@ public class Condominium
     public required Address Address { get; set; }
 
     public List<Tower> Towers { get; set; } = [];
+    public List<ResidentProspect> ResidentProspects { get; set; } = [];
 }
