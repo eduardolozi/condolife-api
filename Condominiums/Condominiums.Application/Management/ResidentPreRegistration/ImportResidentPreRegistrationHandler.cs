@@ -13,6 +13,9 @@ public class ImportResidentPreRegistrationHandler(
     ICondominiumDbContext dbContext,
     ICsvFileService csvFileService)
 {
+    private const string SuccessMessage = "Arquivo processado com sucesso.";
+    private const string InconsistencyMessage = "Arquivo processado com inconsistências.";
+
     public async Task<ImportResidentPreRegistrationResult> HandleAsync(ImportResidentPreRegistrationCommand command, CancellationToken ct)
     {
         await commandValidator.ValidateAndThrowAsync(command, ct);
@@ -38,6 +41,14 @@ public class ImportResidentPreRegistrationHandler(
                 ]);
         }
 
+        var normalizedRows = rows.Select(row => new NormalizedResidentPreRegistrationRow(
+            row.LineNumber,
+            ResidentPreRegistrationNormalizer.NormalizeText(row.Nome),
+            ResidentPreRegistrationNormalizer.NormalizeCpf(row.Cpf),
+            ResidentPreRegistrationNormalizer.NormalizeText(row.Apartamento),
+            ResidentPreRegistrationNormalizer.NormalizeOptionalText(row.Bloco)))
+            .ToList();
+
         var failures = new List<ValidationFailure>();
 
         foreach (var row in rows)
@@ -57,22 +68,14 @@ public class ImportResidentPreRegistrationHandler(
 
         if (failures.Count > 0)
         {
-            throw new ValidationException(failures);
+            return BuildFailureResult(normalizedRows, failures);
         }
-
-        var normalizedRows = rows.Select(row => new NormalizedResidentPreRegistrationRow(
-            row.LineNumber,
-            ResidentPreRegistrationNormalizer.NormalizeText(row.Nome),
-            ResidentPreRegistrationNormalizer.NormalizeCpf(row.Cpf),
-            ResidentPreRegistrationNormalizer.NormalizeText(row.Apartamento),
-            ResidentPreRegistrationNormalizer.NormalizeOptionalText(row.Bloco)))
-            .ToList();
 
         failures.AddRange(ValidateDuplicateRows(normalizedRows));
 
         if (failures.Count > 0)
         {
-            throw new ValidationException(failures);
+            return BuildFailureResult(normalizedRows, failures);
         }
 
         var residentProspects = normalizedRows.Select(row => new ResidentProspect
@@ -91,10 +94,19 @@ public class ImportResidentPreRegistrationHandler(
         }
         catch (DbUpdateException ex) when (ex.InnerException is PostgresException postgresException && postgresException.SqlState == PostgresErrorCodes.UniqueViolation)
         {
-            throw new ValidationException(GetUniqueConstraintFailures(normalizedRows, postgresException.ConstraintName));
+            var databaseFailures = await GetUniqueConstraintFailuresAsync(
+                command.CondominiumId,
+                normalizedRows,
+                postgresException.ConstraintName,
+                ct);
+
+            return BuildFailureResult(normalizedRows, databaseFailures);
         }
 
-        return new ImportResidentPreRegistrationResult(residentProspects.Count);
+        return new ImportResidentPreRegistrationResult(
+            true,
+            SuccessMessage,
+            normalizedRows.Select(CreateRowResult).ToList());
     }
 
     private static List<ValidationFailure> ValidateDuplicateRows(List<NormalizedResidentPreRegistrationRow> rows)
@@ -128,25 +140,93 @@ public class ImportResidentPreRegistrationHandler(
         return failures;
     }
 
-    private static List<ValidationFailure> GetUniqueConstraintFailures(
+    private async Task<List<ValidationFailure>> GetUniqueConstraintFailuresAsync(
+        int condominiumId,
         List<NormalizedResidentPreRegistrationRow> rows,
-        string? constraintName)
+        string? constraintName,
+        CancellationToken ct)
     {
         return constraintName switch
         {
-            "UX_ResidentProspects_CondominiumId_Cpf" => rows
-                .Select(row => CreateFailure(nameof(ResidentPreRegistrationRow.Cpf), "O CPF já está cadastrado para este condomínio.", row.LineNumber))
-                .ToList(),
-            "UX_ResidentProspects_CondominiumId_Apartment_WithoutBlock" => rows
-                .Where(row => row.Block is null)
-                .Select(row => CreateFailure(nameof(ResidentPreRegistrationRow.Apartamento), "O apartamento já está cadastrado para este condomínio.", row.LineNumber))
-                .ToList(),
-            "UX_ResidentProspects_CondominiumId_Apartment_Block_WithBlock" => rows
-                .Where(row => row.Block is not null)
-                .Select(row => CreateFailure(nameof(ResidentPreRegistrationRow.Apartamento), "A combinação apartamento/bloco já está cadastrada para este condomínio.", row.LineNumber))
-                .ToList(),
+            "UX_ResidentProspects_CondominiumId_Cpf" => await GetCpfConstraintFailuresAsync(condominiumId, rows, ct),
+            "UX_ResidentProspects_CondominiumId_Apartment_WithoutBlock" => await GetApartmentWithoutBlockConstraintFailuresAsync(condominiumId, rows, ct),
+            "UX_ResidentProspects_CondominiumId_Apartment_Block_WithBlock" => await GetApartmentWithBlockConstraintFailuresAsync(condominiumId, rows, ct),
             _ => [new ValidationFailure(nameof(ImportResidentPreRegistrationCommand), "Não foi possível concluir a importação porque existem dados duplicados para este condomínio.")]
         };
+    }
+
+    private async Task<List<ValidationFailure>> GetCpfConstraintFailuresAsync(
+        int condominiumId,
+        List<NormalizedResidentPreRegistrationRow> rows,
+        CancellationToken ct)
+    {
+        var cpfs = rows
+            .Select(row => row.Cpf)
+            .Distinct()
+            .ToList();
+
+        var existingCpfs = await dbContext.ResidentProspects
+            .Where(x => x.CondominiumId == condominiumId && cpfs.Contains(x.Cpf))
+            .Select(x => x.Cpf)
+            .ToListAsync(ct);
+
+        var existingCpfSet = existingCpfs.ToHashSet(StringComparer.Ordinal);
+
+        return rows
+            .Where(row => existingCpfSet.Contains(row.Cpf))
+            .Select(row => CreateFailure(nameof(ResidentPreRegistrationRow.Cpf), "O CPF já está cadastrado para este condomínio.", row.LineNumber))
+            .ToList();
+    }
+
+    private async Task<List<ValidationFailure>> GetApartmentWithoutBlockConstraintFailuresAsync(
+        int condominiumId,
+        List<NormalizedResidentPreRegistrationRow> rows,
+        CancellationToken ct)
+    {
+        var apartments = rows
+            .Where(row => row.Block is null)
+            .Select(row => row.Apartment)
+            .Distinct()
+            .ToList();
+
+        var existingApartments = await dbContext.ResidentProspects
+            .Where(x => x.CondominiumId == condominiumId && x.Block == null && apartments.Contains(x.Apartment))
+            .Select(x => x.Apartment)
+            .ToListAsync(ct);
+
+        var existingApartmentSet = existingApartments.ToHashSet(StringComparer.Ordinal);
+
+        return rows
+            .Where(row => row.Block is null && existingApartmentSet.Contains(row.Apartment))
+            .Select(row => CreateFailure(nameof(ResidentPreRegistrationRow.Apartamento), "O apartamento já está cadastrado para este condomínio.", row.LineNumber))
+            .ToList();
+    }
+
+    private async Task<List<ValidationFailure>> GetApartmentWithBlockConstraintFailuresAsync(
+        int condominiumId,
+        List<NormalizedResidentPreRegistrationRow> rows,
+        CancellationToken ct)
+    {
+        var apartmentBlocks = rows
+            .Where(row => row.Block is not null)
+            .Select(row => new { row.Apartment, row.Block })
+            .Distinct()
+            .ToList();
+
+        var existingApartmentBlocks = await dbContext.ResidentProspects
+            .Where(x => x.CondominiumId == condominiumId && x.Block != null)
+            .Select(x => new { x.Apartment, x.Block })
+            .ToListAsync(ct);
+
+        var existingApartmentBlockSet = existingApartmentBlocks
+            .Where(x => apartmentBlocks.Any(key => key.Apartment == x.Apartment && key.Block == x.Block))
+            .Select(x => $"{x.Apartment}|{x.Block}")
+            .ToHashSet(StringComparer.Ordinal);
+
+        return rows
+            .Where(row => row.Block is not null && existingApartmentBlockSet.Contains($"{row.Apartment}|{row.Block}"))
+            .Select(row => CreateFailure(nameof(ResidentPreRegistrationRow.Apartamento), "A combinação apartamento/bloco já está cadastrada para este condomínio.", row.LineNumber))
+            .ToList();
     }
 
     private static ValidationFailure CreateFailure(string propertyName, string message, int lineNumber)
@@ -157,14 +237,65 @@ public class ImportResidentPreRegistrationHandler(
         };
     }
 
+    private static ImportResidentPreRegistrationResult BuildFailureResult(
+        List<NormalizedResidentPreRegistrationRow> rows,
+        List<ValidationFailure> failures)
+    {
+        var errorsByLine = failures
+            .Where(failure => failure.CustomState is int)
+            .GroupBy(failure => (int)failure.CustomState!)
+            .ToDictionary(
+                group => group.Key,
+                group => group.Select(failure => new ImportResidentPreRegistrationRowError(
+                        MapField(failure.PropertyName),
+                        failure.ErrorMessage))
+                    .ToList());
+
+        var results = rows
+            .Select(row => CreateRowResult(
+                row,
+                errorsByLine.TryGetValue(row.LineNumber, out var rowErrors)
+                    ? rowErrors
+                    : []))
+            .ToList();
+
+        return new ImportResidentPreRegistrationResult(false, InconsistencyMessage, results);
+    }
+
+    private static ImportResidentPreRegistrationRowResult CreateRowResult(NormalizedResidentPreRegistrationRow row)
+    {
+        return CreateRowResult(row, []);
+    }
+
+    private static ImportResidentPreRegistrationRowResult CreateRowResult(
+        NormalizedResidentPreRegistrationRow row,
+        List<ImportResidentPreRegistrationRowError> errors)
+    {
+        return new ImportResidentPreRegistrationRowResult(
+            row.LineNumber,
+            new ImportResidentPreRegistrationRowData(
+                row.Name,
+                row.Cpf,
+                row.Apartment,
+                row.Block),
+            errors);
+    }
+
+    private static string MapField(string propertyName)
+    {
+        return propertyName switch
+        {
+            nameof(ResidentPreRegistrationRow.Nome) => "name",
+            nameof(ResidentPreRegistrationRow.Cpf) => "cpf",
+            nameof(ResidentPreRegistrationRow.Apartamento) => "apartment",
+            nameof(ResidentPreRegistrationRow.Bloco) => "block",
+            _ => propertyName.ToLowerInvariant()
+        };
+    }
+
     private sealed record NormalizedResidentPreRegistrationRow(
         int LineNumber,
         string Name,
-        string Cpf,
-        string Apartment,
-        string? Block);
-
-    private sealed record ExistingResidentProspect(
         string Cpf,
         string Apartment,
         string? Block);
