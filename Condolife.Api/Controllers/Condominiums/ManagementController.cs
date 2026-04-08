@@ -25,7 +25,7 @@ public class ManagementController : ControllerBase
     public async Task<ActionResult<ImportResidentPreRegistrationResult>> ImportResidentPreRegistration(
         [FromRoute] int condominiumId,
         [FromForm] IFormFile? file,
-        [FromServices] ImportResidentPreRegistrationUseCase useCase,
+        [FromServices] ImportResidentPreRegistrationHandler useCase,
         CancellationToken ct)
     {
         await using var stream = new MemoryStream();

@@ -22,7 +22,7 @@ public static class DependencyResolver
         services.AddScoped<GetResidentPreRegistrationTemplateHandler>();
         services.AddScoped<IValidator<ImportResidentPreRegistrationCommand>, ImportResidentPreRegistrationCommandValidator>();
         services.AddScoped<IValidator<ResidentPreRegistrationRow>, ResidentPreRegistrationRowValidator>();
-        services.AddScoped<ImportResidentPreRegistrationUseCase>();
+        services.AddScoped<ImportResidentPreRegistrationHandler>();
 
         services.AddScoped<GetCondominiumsAddressInfosUseCase>();
         services.AddScoped<IGetCondominiumsAddressInfosHandler, GetCondominiumsAddressInfosHandler>();
